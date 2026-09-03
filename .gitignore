@@ -3,13 +3,13 @@
 
 .idea/
 
-pkg
-larpr
+**/target/
+**/pkg/
+**/larpr/
+**/debug/
 
-debug
-target
-/target
-
+*.diff
+*.pkg.tar.zst
 *.pdb
 **/*.rs.bk
 **/mutants.out*/
