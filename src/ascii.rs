@@ -1,12 +1,15 @@
 // Copyright (c) Akeoot <akeoot@pm.me>. Licensed under the LGPL-3.0 Licence.
 // See the LICENSE file in the repository root for full license text.
 
+use std::sync::OnceLock;
+
 /// A static ASCII art pattern stored as a slice of lines.
 pub struct AsciiArt {
     pub lines: &'static [&'static str],
 }
 
-impl AsciiArt {
+impl
+AsciiArt {
     /// Maximum line width in characters.
     pub fn width(&self) -> usize {
         self.lines.iter().map(|l| l.chars().count()).max().unwrap_or(0)
@@ -22,26 +25,9 @@ impl AsciiArt {
 pub const VARIANTS: &[AsciiArt] = &[
     AsciiArt {
         lines: &[
-            r"01001100 01100001 01110010 01110000",
-        ],
-    },
-    AsciiArt {
-        lines: &[
-            r"4C 61 72 70",
-        ],
-    },
-    AsciiArt {
-        lines: &[
-            r".-.. .- .-. .--.",
-        ],
-    },
-    AsciiArt {
-        lines: &[
-            r"#####   #   ####  #####",
-            r" #  #  # #  #   # #   #",
-            r" #  # ##### ####  #   #",
-            r" #  # #   # #     #   #",
-            r"#   # #   # #     #   #",
+            r"██      ▄▄▄  ▄▄▄▄  ▄▄▄▄",
+            r"██     ██▀██ ██▄█▄ ██▄█▀",
+            r"██████ ██▀██ ██ ██ ██",
         ],
     },
     AsciiArt {
@@ -54,125 +40,185 @@ pub const VARIANTS: &[AsciiArt] = &[
     },
     AsciiArt {
         lines: &[
-            r"██      ▄▄▄  ▄▄▄▄  ▄▄▄▄",
-            r"██     ██▀██ ██▄█▄ ██▄█▀",
-            r"██████ ██▀██ ██ ██ ██",
+            r"▀█▐▀    ▀█▐▀███ ▀█▐▀███ ▀█▐▀███",
+            r" █▐      █▐▄███  █▐▄██▀  █▐ ███",
+            r" █▐ ███  █▐ ███  █▐ ███  █▐▀▀▀▀",
+            r"▀▀▀▀▀▀▀ ▀▀▀ ▀▀▀ ▀▀▀ ▀▀▀ ▀▀▀▀",
         ],
     },
     AsciiArt {
         lines: &[
-            r".____",
-            r"|    |   _____ _____________",
-            r"|    |   \__  \\_  __ \____ \",
-            r"|    |___ / __ \|  | \/  |_> >",
-            r"|_______ (____  /__|  |   __/",
-            r"        \/    \/      |__|",
+            r"██╗      █████╗ ██████╗ ██████╗",
+            r"██║     ██╔══██╗██╔══██╗██╔══██╗",
+            r"██║     ███████║██████╔╝██████╔╝",
+            r"██║     ██╔══██║██╔══██╗██╔═══╝",
+            r"███████╗██║  ██║██║  ██║██║",
+            r"╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝",
         ],
     },
     AsciiArt {
         lines: &[
-            r"   __",
-            r"  / /  __ _ _ __ _ __",
-            r" / /  / _` | '__| '_ \",
-            r"/ /__| (_| | |  | |_) |",
-            r"\____/\__,_|_|  | .__/",
-            r"                |_|",
+            r"▄▄▄           ▄▄▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄",
+            r"███           ▄▄▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄",
+            r"███                     ███          ███          ███",
+            r"███           ███       ███  ███▄▄▄▄▄███  ███▄▄▄▄▄███",
+            r"███           ███▄▄▄▄▄▄▄███  ███▄▄▄▄▄     ███▄▄▄▄▄",
+            r"███           ███▄▄▄▄▄▄▄███  ███ ███▌     ███",
+            r"███ ▄▄▄▄▄▄▄▄  ███       ███  ███ ▐███     ███",
+            r"███ ▄▄▄▄▄▄▄▄  ███       ███  ███  ███▌    ███",
         ],
     },
     AsciiArt {
         lines: &[
-            r" ___      _______  ______    _______",
-            r"|   |    |   _   ||    _ |  |       |",
-            r"|   |    |  |_|  ||   | ||  |    _  |",
-            r"|   |    |       ||   |_||_ |   |_| |",
-            r"|   |___ |       ||    __  ||    ___|",
-            r"|       ||   _   ||   |  | ||   |",
-            r"|_______||__| |__||___|  |_||___|",
+            r"  ██        ██▀▀▀██    ██▀▀▀██    ██▀▀▀██",
+            r"█ ██ ██████ ██ █ ██ ██ ██ █ ██ ██ ██ █ ██ █",
+            r"█ ██ ██████ ██ ▀ ██ ██ ██ █ ██ ██ ██ █ ██ █",
+            r"█ ██ ██████ ███████ ██ ██ ▀ ██ ██ ██▄▄▄██ █",
+            r"█ ██ ██████ ██ ▄ ██ ██ ██████  ██ ██ ▄▄▄▄▄█",
+            r"█ ██ ██████ ██ █ ██ ██ ██ ▄ ██ ██ ██ ██████",
+            r"█ ██ ██████ ██ █ ██ ██ ██ █ ██ ██ ██ ██████",
+            r"█ ██ ██████ ██ █ ██ ██ ██ █ ██ ██ ██ ██████",
+            r"▀ ██▄▄▄▄ ▀▀ ██ ▀ ██ ▀▀ ██ ▀ ██ ▀▀ ██ ▀▀▀▀▀▀",
         ],
     },
     AsciiArt {
         lines: &[
-            r"dP",
-            r"88",
-            r"88        .d8888b. 88d888b. 88d888b.",
-            r"88        88'  `88 88'  `88 88'  `88",
-            r"88        88.  .88 88       88.  .88",
-            r"88888888P `88888P8 dP       88Y888P'",
-            r"                            88",
-            r"                            dP",
+            r" ████",
+            r"░░███",
+            r" ░███   ██████   ████████  ████████",
+            r" ░███  ░░░░░███ ░░███░░███░░███░░███",
+            r" ░███   ███████  ░███ ░░░  ░███ ░███",
+            r" ░███  ███░░███  ░███      ░███ ░███",
+            r" █████░░████████ █████     ░███████",
+            r"░░░░░  ░░░░░░░░ ░░░░░      ░███░░░",
+            r"                           ░███",
+            r"                           █████",
+            r"                          ░░░░░",
+        ],
+    },
+    AsciiArt {
+        lines: &[
+            r" ▄▄▄▄        ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄",
+            r"█████       █▄███████▄█ █████████▄█ █████████▄█",
+            r"█▓▓▓█       █▓▓▓▓▓▓▓▓▓█ █▓▓▓▓▓▓▓▓▓█ █▓▓▓▓▓▓▓▓▓█",
+            r"█▒▒▒█       █▒▒▒█▀█▒▒▒█ █▄▄▄█▀█▒▒▒█ █▄▄▄█▀█▒▒▒█",
+            r"█░░░█       █░░░█▄█░░░█ █░░░█▄█░░░█ █░░░█▄█░░░█",
+            r"█░░░█ ▄▄▄▄▄ █░░░░░░░░░█ █░░░▀▀▀░░▄█ █░░░░░░░░░█",
+            r"█▒▒▒█▄█▒▒▒█ █▒▒▒▒▒▒▒▒▒█ █▒▒▒█ █▒▒▒█ █▒▒▒▒▒▒▒▒▀█",
+            r"█▓▓▓▓▓▓▓▓▓█ █▓▓▓█▀█▓▓▓█ █▓▓▓█ █▓▓▓█ █▓▓▓█▀▀▀▀▀",
+            r"███████████ █████ █████ █████ █████ █████",
+            r"▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀ ▀▀▀▀▀ ▀▀▀▀▀ ▀▀▀▀▀ ▀▀▀▀▀",
         ],
     },
 ];
 
 /// Horizontal spacing between grid cells.
-pub const GRID_PITCH_X: i64 = 44;
+pub const GRID_PITCH_X: i64 = 55;
 /// Vertical spacing between grid cells.
-pub const GRID_PITCH_Y: i64 = 9;
+pub const GRID_PITCH_Y: i64 = 12;
+/// Minimum gap between the bounding boxes of any two placed arts.
+const MIN_GAP: i64 = 1;
 
-/// Deterministically hash a grid cell coordinate to a `usize`.
-fn hash_coords(cell_x: i64, cell_y: i64) -> usize {
-    let mut h = (cell_x as u64).wrapping_mul(0x9E3779B97F4A7C15);
-    h ^= (cell_y as u64).wrapping_mul(0xBF58476D1CE4E5B9);
+static SEED: OnceLock<u64> = OnceLock::new();
+
+/// Set the random seed for all placements. Must be called before any rendering.
+pub fn set_seed(seed: u64) {
+    let _ = SEED.set(seed);
+}
+
+/// Returns a 64‑bit deterministic hash for a pair of coordinates,
+/// mixed with the global seed.
+fn hash_pair(x: i64, y: i64) -> u64 {
+    let seed = *SEED.get().unwrap_or(&0);
+    let mut h = (x as u64).wrapping_mul(0x9E3779B97F4A7C15);
+    h ^= (y as u64).wrapping_mul(0xBF58476D1CE4E5B9);
+    h ^= seed;
     h ^= h >> 30;
     h = h.wrapping_mul(0xBF58476D1CE4E5B9);
     h ^= h >> 27;
-    h as usize
+    h.wrapping_mul(0x94D049BB133111EB)
 }
 
-/// Select an art variant based on cell coordinates.
-pub fn hash_variant(cell_x: i64, cell_y: i64) -> usize {
-    hash_coords(cell_x, cell_y) % VARIANTS.len()
+/// Priority of a cell – higher value wins conflicts.
+fn cell_priority(cell_x: i64, cell_y: i64) -> u64 {
+    hash_pair(cell_x, cell_y)
 }
 
-/// Return a random-looking offset within the allowed max bounds.
-fn cell_offset(cell_x: i64, cell_y: i64, max_dx: i64, max_dy: i64) -> (i64, i64) {
-    let h = hash_coords(cell_x.wrapping_mul(73), cell_y.wrapping_mul(131));
-    let dx = if max_dx > 0 { (h as i64) % max_dx } else { 0 };
-    let dy = if max_dy > 0 { ((h >> 8) as i64) % max_dy } else { 0 };
+/// Select an art variant for a cell
+fn variant_for_cell(cell_x: i64, cell_y: i64) -> usize {
+    (hash_pair(cell_x, cell_y) as usize) % VARIANTS.len()
+}
+
+/// Random offset within the cell (anywhere in [0, PITCH_X) × [0, PITCH_Y)).
+fn random_offset_in_cell(cell_x: i64, cell_y: i64) -> (i64, i64) {
+    let h = hash_pair(cell_x.wrapping_mul(73), cell_y.wrapping_mul(131));
+    let dx = (h % GRID_PITCH_X as u64) as i64;
+    let dy = ((h >> 8) % GRID_PITCH_Y as u64) as i64;
     (dx, dy)
 }
 
-/// Returns the character that should be drawn at the given world‑space coordinate.
-/// This inspects the surrounding grid cells and selects the first non‑space character
-/// from the overlapping art piece.
-pub fn char_at(global_x: i64, global_y: i64) -> char {
-    let base_cx = global_x.div_euclid(GRID_PITCH_X);
-    let base_cy = global_y.div_euclid(GRID_PITCH_Y);
+/// Computes the origin (global coordinates) of the art placed in a given cell,
+/// if that cell actually contains an art. Returns `Some((variant_idx, origin_x, origin_y))`
+/// or `None` if the cell is empty (due to conflict resolution).
+pub(crate) fn placed_art(cell_x: i64, cell_y: i64) -> Option<(usize, i64, i64)> {
+    let variant = variant_for_cell(cell_x, cell_y);
+    let art = &VARIANTS[variant];
+    let art_w = art.width() as i64;
+    let art_h = art.height() as i64;
 
-    for cy_offset in -1..=1 {
-        for cx_offset in -1..=1 {
-            let cell_x = base_cx + cx_offset;
-            let cell_y = base_cy + cy_offset;
+    // Basic position within its own cell (anywhere inside)
+    let (dx, dy) = random_offset_in_cell(cell_x, cell_y);
+    let origin_x = cell_x * GRID_PITCH_X + dx;
+    let origin_y = cell_y * GRID_PITCH_Y + dy;
 
-            let variant_idx = hash_variant(cell_x, cell_y);
-            let art = &VARIANTS[variant_idx];
-            let art_w = art.width() as i64;
-            let art_h = art.height() as i64;
+    // Our bounding box, expanded by the minimum gap
+    let gap = MIN_GAP;
+    let x1 = origin_x - gap;
+    let x2 = origin_x + art_w - 1 + gap;
+    let y1 = origin_y - gap;
+    let y2 = origin_y + art_h - 1 + gap;
 
-            let max_dx = (GRID_PITCH_X - art_w).max(0);
-            let max_dy = (GRID_PITCH_Y - art_h).max(0);
+    // Check all neighboring cells that could potentially overlap.
+    // The maximum extent of any art + gap defines the required search radius.
+    let max_art_w = VARIANTS.iter().map(|a| a.width() as i64).max().unwrap_or(0);
+    let max_art_h = VARIANTS.iter().map(|a| a.height() as i64).max().unwrap_or(0);
+    let radius_x = (max_art_w + 2 * gap) / GRID_PITCH_X + 2;   // +2 for safety
+    let radius_y = (max_art_h + 2 * gap) / GRID_PITCH_Y + 2;
 
-            let (dx, dy) = cell_offset(cell_x, cell_y, max_dx, max_dy);
-            let origin_x = cell_x * GRID_PITCH_X + dx;
-            let origin_y = cell_y * GRID_PITCH_Y + dy;
+    let my_priority = cell_priority(cell_x, cell_y);
 
-            if global_x >= origin_x && global_y >= origin_y {
-                let local_x = (global_x - origin_x) as usize;
-                let local_y = (global_y - origin_y) as usize;
+    for dy in -radius_y..=radius_y {
+        for dx in -radius_x..=radius_x {
+            if dx == 0 && dy == 0 { continue; }
+            let nx = cell_x + dx;
+            let ny = cell_y + dy;
 
-                if local_y < art.lines.len() {
-                    let line = art.lines[local_y];
-                    if local_x < line.chars().count() {
-                        if let Some(c) = line.chars().nth(local_x) {
-                            if c != ' ' {
-                                return c;
-                            }
-                        }
-                    }
+            // Compute that neighbor's art (if any) recursively – but we avoid infinite loops.
+            let n_variant = variant_for_cell(nx, ny);
+            let n_art = &VARIANTS[n_variant];
+            let n_w = n_art.width() as i64;
+            let n_h = n_art.height() as i64;
+            let (ndx, ndy) = random_offset_in_cell(nx, ny);
+            let n_origin_x = nx * GRID_PITCH_X + ndx;
+            let n_origin_y = ny * GRID_PITCH_Y + ndy;
+
+            // Neighbor’s expanded bounding box
+            let nx1 = n_origin_x - gap;
+            let nx2 = n_origin_x + n_w - 1 + gap;
+            let ny1 = n_origin_y - gap;
+            let ny2 = n_origin_y + n_h - 1 + gap;
+
+            // Check overlap (expanded boxes)
+            if x1 <= nx2 && x2 >= nx1 && y1 <= ny2 && y2 >= ny1 {
+                let neigh_priority = cell_priority(nx, ny);
+                if neigh_priority > my_priority {
+                    return None;
                 }
+                // If we have higher priority, the neighbor will be suppressed (when it checks us).
             }
         }
     }
 
-    ' '
+    // No higher‑priority overlap found → we keep this placement.
+    Some((variant, origin_x, origin_y))
 }

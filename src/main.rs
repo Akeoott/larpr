@@ -13,6 +13,12 @@ fn main() -> std::io::Result<()> {
     let args = Args::parse();
 
     if args.larp || args.color.is_some() {
+        let seed = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos() as u64;
+        ascii::set_seed(seed);
+
         app::run(&args)?;
     } else {
         println!("\"There's no limit to the larp\"");

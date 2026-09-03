@@ -57,13 +57,43 @@ pub fn render_frame(
 
 /// Construct a flat string containing all characters for the current viewport.
 fn build_screen_buffer(width: usize, height: usize, scroll_x: i64, scroll_y: i64) -> String {
-    let mut buffer = String::with_capacity(width * height + height);
-    for y in 0..height {
-        for x in 0..width {
-            let global_x = scroll_x + x as i64;
-            let global_y = scroll_y + y as i64;
-            buffer.push(ascii::char_at(global_x, global_y));
+    let mut buffer = vec![' '; width * height];
+
+    // Maximum possible width/height of any art (used to expand the cell search range)
+    let max_art_w = ascii::VARIANTS.iter().map(|a| a.width() as i64).max().unwrap_or(0);
+    let max_art_h = ascii::VARIANTS.iter().map(|a| a.height() as i64).max().unwrap_or(0);
+
+    // Determine the range of cells that could intersect the viewport.
+    let min_cx = (scroll_x - max_art_w).div_euclid(ascii::GRID_PITCH_X) - 1;
+    let max_cx = (scroll_x + width as i64 + max_art_w).div_euclid(ascii::GRID_PITCH_X) + 1;
+    let min_cy = (scroll_y - max_art_h).div_euclid(ascii::GRID_PITCH_Y) - 1;
+    let max_cy = (scroll_y + height as i64 + max_art_h).div_euclid(ascii::GRID_PITCH_Y) + 1;
+
+    for cy in min_cy..=max_cy {
+        for cx in min_cx..=max_cx {
+            if let Some((variant, ox, oy)) = ascii::placed_art(cx, cy) {
+                let art = &ascii::VARIANTS[variant];
+                // Draw the art onto the buffer, but only if it is inside the viewport.
+                for (local_y, line) in art.lines.iter().enumerate() {
+                    let global_y = oy + local_y as i64;
+                    let screen_y = global_y - scroll_y;
+                    if screen_y < 0 || screen_y >= height as i64 {
+                        continue;
+                    }
+                    for (local_x, ch) in line.chars().enumerate() {
+                        if ch != ' ' {
+                            let global_x = ox + local_x as i64;
+                            let screen_x = global_x - scroll_x;
+                            if screen_x >= 0 && screen_x < width as i64 {
+                                let idx = screen_y as usize * width + screen_x as usize;
+                                buffer[idx] = ch;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    buffer
+
+    buffer.into_iter().collect()
 }
