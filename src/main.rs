@@ -15,8 +15,8 @@ fn main() -> std::io::Result<()> {
     if args.larp || args.color.is_some() {
         app::run(&args)?;
     } else {
-        println!("\n\"The larp can never end\"");
-        println!("Use -h for help, you larper!\n");
+        println!("\"There's no limit to the larp\"");
+        println!("Use -h for help!\n");
 
         println!("████      ▄███████▄ ███████▄  ███████▄");
         println!("████      ███   ███ ███   ███ ███   ███");
