@@ -13,6 +13,9 @@ cd ./larpr
 
 cargo install
 cargo run -- -h
+
+# To permanently install on system
+makepkg -si
 ```
 
 Requires rust and cargo. Quick setup:
