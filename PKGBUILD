@@ -13,16 +13,16 @@ source=("larpr::git+https://github.com/Akeoott/larpr.git")
 sha256sums=('SKIP')
 
 pkgver() {
-  cd "$srcdir/larpr"
-  git describe --tags --abbrev=0 2>/dev/null | sed -e 's/-/_/g'
+  cd "$srcdir/$pkgname"
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-  cd "$srcdir/larpr"
+  cd "$srcdir/$pkgname"
   cargo build --release
 }
 
 package() {
-  cd "$srcdir/larpr"
+  cd "$srcdir/$pkgname"
   install -Dm755 target/release/larpr "$pkgdir/usr/bin/larpr"
 }
