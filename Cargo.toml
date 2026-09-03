@@ -1,6 +1,8 @@
 [package]
 name = "larpr"
-version = "0.0.0"
+version = "0.67.0-larp"
 edition = "2024"
 
 [dependencies]
+clap = { version = "4.6.6", features = ["derive"] }
+crossterm = "0.29.0"

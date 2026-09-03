@@ -1,4 +1,18 @@
-# larpr
-Start larping + It's written in rust
+# larpr - There's no limit to the larp.
 
-There's no limit to the larp. Larp more than any larper before.
+### Quick Start
+
+Clone and run `larpr` from source
+```bash
+git clone https://github.com/Akeoott/larpr
+cd ./larpr
+
+cargo install
+cargo run -- -h
+```
+
+Requires rust and cargo. Quick setup:
+```bash
+sudo pacman -S rustup
+rustup default stable
+```
