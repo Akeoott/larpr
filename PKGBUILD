@@ -8,12 +8,13 @@ url="https://github.com/Akeoott/larpr"
 license=('LGPL-3.0')
 depends=()
 makedepends=('cargo' 'rust' 'git')
+
 source=("larpr::git+https://github.com/Akeoott/larpr.git")
 sha256sums=('SKIP')
 
 pkgver() {
   cd "$srcdir/larpr"
-  git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
+  git describe --tags --abbrev=0 2>/dev/null | sed -e 's/-/_/g'
 }
 
 build() {
