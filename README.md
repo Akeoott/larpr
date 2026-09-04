@@ -35,3 +35,5 @@ rustup default stable
 <br>
 
 # I use arch btw
+
+![](./assets/printhelloworld.webp)
